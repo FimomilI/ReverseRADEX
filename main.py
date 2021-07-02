@@ -37,8 +37,6 @@ data_retrieval = DataRetrieval()
 #### Catch user input from terminal ####
 user_molfile = input_constant.molfile_input()
 user_datfile = input_constant.datafile_input()
-# user_molfile  = '/home/mooren/BT/moldata/co.dat'
-# user_datfile  = '/home/mooren/BT/reverseRadex/new_test.dat'
 
 # (matching) frequencies with molfile.
 freq_indices  = data_retrieval.get_molfile_frequency_index(user_datfile,
