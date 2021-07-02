@@ -86,14 +86,14 @@ voldens  = input_variable.collision_densities_input()
 # # variable parameters.
 # # [name parameter, init guess, (bound_low, bound_upp), fit parameter?]
 # # 0.1 < tkin < 1e4 [K]
-# temp_kin = ['tkin', 131, (10.0, 500.0), True]
+# temp_kin = ['tkin', 131, (10.0, 750.0), True]
 # # 1e5 < cdmol 1e25 [cm^-2]
 # coldens  = ['cdmol', 3e16, (1e10, 5e21), True]
 # # coll partner:(init guess, fit parameter?)
 # # 1e-3 < coll partner < 1e13 [cm^-3]
 # voldens  = {'h2':(3e4, True), 'h':(0.0, False), 'e-':(0.0, False),
 #             'p-h2':(0, False), 'o-h2':(0.0, False), 'h+':(0.0, False),
-#             'he':(0.0, False), 'min_max':(5e3, 5e8)}
+#             'he':(0.0, False), 'min_max':(1e3, 1e8)}
 
 # # constant parameters.
 # Tbg  = 2.73  # K
