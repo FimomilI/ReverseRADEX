@@ -175,13 +175,13 @@ def find_initial_parameter_guesses(kinetic_temperature, column_density,
 
     # be sure to exclude the first and last point of the chosen limits
     # by taking endpoint=False and [1:] to exclude the starting point.
-    if Tkin_fit == True:
+    if Tkin_fit is True:
         Tkin_grid = linspace(Tkin_min, Tkin_max,
                              num_points_tkin + 1, endpoint=False)[1:]
     else:
         Tkin_grid = Tkin_value
 
-    if cd_fit == True:
+    if cd_fit is True:
         cd_grid = geomspace(cd_min, cd_max,
                             num_points_cd + 1, endpoint=False)[1:]
     else:
@@ -191,9 +191,9 @@ def find_initial_parameter_guesses(kinetic_temperature, column_density,
     grid_guess_parameters = {}
     for collision_partner in voldens:
         # exclude the volume density bounds
-        if collision_partner != 'min_max':
+        if collision_partner is not 'min_max':
             value, fit = voldens[collision_partner]
-            if fit == False:
+            if fit is False:
                 grid_guess_parameters[collision_partner] = value
             else:
                 number_of_parameters_to_fit += 1

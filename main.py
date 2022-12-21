@@ -1,116 +1,80 @@
 #!/usr/bin/env python3
-#%%
-# relative imports.
-from user_input import (
-    ConstantParamaters,
-    VariableParamters,
-    DataRetrieval,
-    yay_or_nay
-)
-from fitting import (
-    AlgorithmHelpers,
-    find_initial_parameter_guesses,
-    run_levenberg_marquardt,
-    run_monte_carlo,
-)
-from save_plot import Plotting, SaveResults
-
-# module imports.
-from numpy import (
-    append,
-    array,
-    log10,
-    full,
-)
-from datetime import timedelta, datetime
+#%% imports
+from configparser import ConfigParser
+from datetime import datetime, timedelta
+from os import getcwd
 from pathlib import Path
 from time import time
-from os import getcwd
 
+from numpy import append, array, full, log10
+
+from fitting import (AlgorithmHelpers, find_initial_parameter_guesses,
+                     run_levenberg_marquardt, run_monte_carlo)
+from save_plot import Plotting, SaveResults
+from user_input import (ConstantParamaters, DataRetrieval,
+                        VariableParamters,
+                        yay_or_nay)
 
 input_constant = ConstantParamaters()
 input_variable = VariableParamters()
 data_retrieval = DataRetrieval()
 
 
-#%%
+#%% Read input from config.ini or ask for user input from terminal
+config = ConfigParser()
+config.read('config.ini')
+
+if eval(config['USE_CONFIG']['UseConfig']) is True:
+    paths     = 'PATHS'
+    constants = 'CONSTANT_PARAMETERS'
+    variables = 'VARIABLE_PARAMETERS'
+
+    # file locations.
+    user_molfile = eval(config[paths]['MolecularFile'])
+    user_datfile = eval(config[paths]['SpectraFile'])
+    print(user_molfile, user_datfile)
+
+    # constant parameters.
+    Tbg             = eval(config[constants]['BackgroundTemperature'])
+    dv              = eval(config[constants]['LineWidth'])
+    geom, geom_name = eval(config[constants]['Geometry'])
+
+    # variable parameters.
+    temp_kin = eval(config[variables]['Tkin'])
+    coldens  = eval(config[variables]['Coldens'])
+    voldens  = eval(config[variables]['Voldens'])
+else:  #### Catch user input from terminal ####
+    user_molfile = input_constant.molfile_input()
+    user_datfile = input_constant.datafile_input()
+
+    # constant parameters.
+    Tbg             = input_constant.background_radiation_input()
+    dv              = input_constant.line_width_input()
+    geom, geom_name = input_constant.geometry_input()
+
+    # variable parameters.
+    temp_kin = input_variable.kinetic_temperature_input()
+    coldens  = input_variable.column_density_input()
+    voldens  = input_variable.collision_densities_input()
 #### Catch user input from terminal ####
-user_molfile = input_constant.molfile_input()
-user_datfile = input_constant.datafile_input()
 
 # (matching) frequencies with molfile.
-freq_indices  = data_retrieval.get_molfile_frequency_index(user_datfile,
-                                                           user_molfile)
-freq          = data_retrieval.get_frequencies(freq_indices, user_molfile)
+freq_indices = data_retrieval.get_molfile_frequency_index(
+    user_datfile, user_molfile
+)
+freq = data_retrieval.get_frequencies(freq_indices, user_molfile)
 user_mol_frequencies, freq_min, freq_max, number_of_lines_total = freq
-freq_range    = (freq_min, freq_max)
+freq_range = (freq_min, freq_max)
 
 # checking for units and uncertainties.
-units             = data_retrieval.get_user_units(user_datfile)
-uncertainties     = data_retrieval.uncertainties_included(user_datfile)
-(y_observed,
- y_uncertainties) = data_retrieval.line_strengths(user_datfile,
-                                                  uncertainties)
-
-# constant parameters.
-Tbg             = input_constant.background_radiation_input()
-dv              = input_constant.line_width_input()
-geom, geom_name = input_constant.geometry_input()
-
-# variable parameters.
-temp_kin = input_variable.kinetic_temperature_input()
-coldens  = input_variable.column_density_input()
-voldens  = input_variable.collision_densities_input()
-#### Catch user input from terminal ####
+units = data_retrieval.get_user_units(user_datfile)
+uncertainties = data_retrieval.uncertainties_included(user_datfile)
+(y_observed, y_uncertainties) = data_retrieval.line_strengths(
+    user_datfile, uncertainties
+)
 
 
-#%%
-#### If you would like to set the input manually, uncomment the cell ####
-
-
-# user_molfile  = '/home/mooren/BT/moldata/co.dat'
-# user_datfile  = '/home/mooren/BT/reverseRadex/new_test.dat'
-# freq_indices  = data_retrieval.get_molfile_frequency_index(user_datfile,
-#                                                            user_molfile)
-# freq          = data_retrieval.get_frequencies(freq_indices, user_molfile)
-# user_mol_frequencies, freq_min, freq_max, number_of_lines_total = freq
-# freq_range    = (freq_min, freq_max)
-
-
-# units             = data_retrieval.get_user_units(user_datfile)
-# uncertainties     = data_retrieval.uncertainties_included(user_datfile)
-# (y_observed,
-#  y_uncertainties) = data_retrieval.line_strengths(user_datfile,
-#                                                   uncertainties)
-
-# # variable parameters.
-# # [name parameter, init guess, (bound_low, bound_upp), fit parameter?]
-# # 0.1 < tkin < 1e4 [K]
-# temp_kin = ['tkin', 131, (10.0, 750.0), True]
-# # 1e5 < cdmol 1e25 [cm^-2]
-# coldens  = ['cdmol', 3e16, (1e10, 5e21), True]
-# # coll partner:(init guess, fit parameter?)
-# # 1e-3 < coll partner < 1e13 [cm^-3]
-# voldens  = {'h2':(3e4, True), 'h':(0.0, False), 'e-':(0.0, False),
-#             'p-h2':(0, False), 'o-h2':(0.0, False), 'h+':(0.0, False),
-#             'he':(0.0, False), 'min_max':(1e3, 1e8)}
-
-# # constant parameters.
-# Tbg  = 2.73  # K
-# dv   = 1.0   # km s^-1
-# geom = 1     #(1=sphere, 2=LVG, 3=slab)
-# # just for displaying purposes,
-# geom_name = 'uniform sphere'
-
-
-#### If you would like to set the input manually, uncomment the cell ####
-
-##### No user input required beyond this point #####
-##### Unless you want to tweak the algorithms  #####
-
-
-#%%
-# printing the chosen settings for user to check.
+#%% # printing the chosen settings for user to check.
 print(f"\n\nSelected molfile path              : '{user_molfile}'")
 print(f"Selected datafile path             : '{user_datfile}'")
 print(f"Selected line strength units       : {units}")
@@ -129,7 +93,7 @@ print(f"Selected minimum and maximum \n" +
 
 
 constant_parameters = {
-    'tbg':Tbg, 'fmin':freq_min, 'fmax':freq_max, 'linewidth':dv,
+    'tbg':Tbg, 'fmin':0, 'fmax':30_000_000, 'linewidth':dv,
     'geometry':geom, 'molfile':user_molfile
 }
 
@@ -180,6 +144,8 @@ print(f"Selected geometry                  : {geom_name}")
 # check if any of the parameters is set to be fit.
 if lim_low.shape[0] == 0:
     raise AssertionError("No parameter is set to be fit.")
+else:  # set bounds for Least-Squares algorithm
+    bounds = (lim_low, lim_upp)
 
 # check if more data is available than parameters to fit.
 # getting the names of the parameters to be fit, the order is important.
@@ -207,7 +173,7 @@ else:
 
 
 
-#%%
+#%% # select indices of observed frequencies
 # since the frequency range is used to limit the radex output, the
 # indices have to be shifted to accommodate for that (for instance, the
 # range might start at 300 GHz while lines exist < 300 GHz. Therefore, the
@@ -220,8 +186,7 @@ matching_lines = full(number_of_lines_total, False)
 matching_lines[matching_index] = True
 
 
-#%%
-### start of main program ###
+#%% ### start of main program ###
 start_time = time()
 
 #### global parameter search ####
@@ -244,8 +209,7 @@ for name, value in zip(fit_parameters_names, global_parameter_estimates):
     print(f"log10({name}): {value:.5f}")
 
 
-#%%
-#### setting up Levenberg-Marquardt and MCMC parameters ####
+#%% #### setting up Levenberg-Marquardt and MCMC parameters ####
 alg_help = AlgorithmHelpers(
     y_observed,
     y_uncertainties,
@@ -258,13 +222,13 @@ alg_help = AlgorithmHelpers(
 )
 
 
-#%%
-#### Levenberg-Marquardt least squares to refine parameter estimates ####
+#%% #### Levenberg-Marquardt least squares to refine parameter estimates ####
 print("\nRefining parameter estimates.")
 initial_parameters = run_levenberg_marquardt(global_parameter_estimates,
                                              alg_help.RADEX_model,
                                              y_observed,
-                                             y_uncertainties)
+                                             y_uncertainties,
+                                             bounds)
 
 LM_time = time()
 LM_duration  = LM_time - start_time
@@ -275,8 +239,7 @@ for name, value in zip(fit_parameters_names, initial_parameters):
     print(f"log10({name}): {value:.5f}")
 
 
-#%%
-#### MCMC for uncertainty estimates ####
+#%% #### MCMC for uncertainty estimates ####
 N = 500  # number of steps the MCMC algorithm takes.
 print("\nRunning MCMC for uncertainty estimates,")
 MCMC_output, ndim = run_monte_carlo(initial_parameters,
@@ -284,22 +247,20 @@ MCMC_output, ndim = run_monte_carlo(initial_parameters,
                                     number_of_steps=N)
 
 
-#%%
-### end of main program ###
+#%% ### end of main program ###
 end_time = time()
 duration = end_time - start_time
 duration_HH_MM_SS = str(timedelta(seconds=duration)).rpartition('.')[0]
 print(f"\nRun time of main program: {duration_HH_MM_SS}.")
 
 
-#%%
-##### plotting and saving of results #####
+#%% ##### plotting and saving of results #####
 date_time = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
-# FIXME: add which molecule is used?
+# FIXME: add filename of molecule + observations to output folder? (might become to long if the date_time is kept as well?)
 # create output directory.
 cwd         = getcwd()
 output_path = cwd + f'/output/{date_time}'
-Path(output_path).mkdir()
+Path(output_path).mkdir(parents=True)
 
 
 ### saving ###

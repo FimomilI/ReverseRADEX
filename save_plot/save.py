@@ -47,6 +47,8 @@ class SaveResults:
         return
 
 
+    # FIXME: add log10(...) in string when outputting data values, instead
+    # of assuming people will just understand that outright. + add units!!!
     def print_parameter_uncertainty_estimates(self,
                                               user_datfile,
                                               user_frequencies,
@@ -76,7 +78,7 @@ class SaveResults:
                 '\n'
             )
             prms_txt.write(
-                'Line (frequencies) used: ' +
+                'Line (frequencies [Hz]) used: ' +
                 str(user_frequencies)[1:-1] +
                 '\n'
             )
@@ -111,8 +113,8 @@ class SaveResults:
                 parameter_50s += [median]
 
                 parameter_summary = (
-                    f"{parameter_name}    : {median:.5f} | -{prm_16:.5f}" +
-                    f" | +{prm_84:.5f}"
+                    f"log10({parameter_name})    : {median:.5f} | -" +
+                    f"{prm_16:.5f} | +{prm_84:.5f}"
                 )
                 print(parameter_summary)
                 prms_txt.write('\n' + parameter_summary)
@@ -178,29 +180,32 @@ class SaveResults:
         )
 
 
-        # define to chi2 column to be added to RADEX.csv.
-        y_RADEX = optimal_RADEX.loc[matching_indices, units].to_numpy()
-        if y_err.all() == 1:
-            chi2_calc = (y_obs - y_RADEX) ** 2
-        else:
-            chi2_calc = ( (y_obs - y_RADEX) / y_err ) ** 2
+        # FIXME: calculate the proper reduced chi^2 of the total fit (not
+        # this weird one of the individual lines (essentially just
+        # residual squared)), and put that in parameters.txt?
+        # # define to chi2 column to be added to RADEX.csv.
+        # y_RADEX = optimal_RADEX.loc[matching_indices, units].to_numpy()
+        # if y_err.all() == 1:
+        #     chi2_calc = (y_obs - y_RADEX) ** 2
+        # else:
+        #     chi2_calc = ( (y_obs - y_RADEX) / y_err ) ** 2
         
-        chi2 = full(optimal_RADEX[units].shape[0], NaN)
-        chi2[matching_indices] = chi2_calc
+        # chi2 = full(optimal_RADEX[units].shape[0], NaN)
+        # chi2[matching_indices] = chi2_calc
                 
         csv_path = f'{self.output_path}/RADEX.csv'
         # write RADEX output to csv.
         optimal_RADEX.to_csv(
-            csv_path, sep=',', na_rep=NaN, float_format='%.3e'
+            csv_path, sep=',', na_rep='', #float_format='%.5e'
         )
-        # read the RADEX output.
-        csv_file = read_csv(csv_path)
-        # add the chi2 values as the last column.
-        csv_file['chi^2'] = array(chi2)
-        # save the new RADEX .csv file.
-        csv_file.to_csv(
-            csv_path, index=False, na_rep=NaN, float_format='%.3e'
-        )
+        # # read the RADEX output.
+        # csv_file = read_csv(csv_path)
+        # # add the chi2 values as the last column.
+        # csv_file['chi^2'] = array(chi2)
+        # # save the new RADEX .csv file.
+        # csv_file.to_csv(
+        #     csv_path, index=False, na_rep='not fit', float_format='%.5e'
+        # )
         
         return params_50
 

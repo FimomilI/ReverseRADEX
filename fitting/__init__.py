@@ -1,4 +1,5 @@
-from .fitting_helper_functions import *
 from .find_initial_guess import *
-from .MCMC import *
+from .fitting_helper_functions import *
+from .global_search import *
 from .LM import *
+from .MCMC import *

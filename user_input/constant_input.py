@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 #%%
-from user_input.input_functions import (
-    numeric_input,
-    in_between_check,
-    re_enter_wrapper
-)
+from user_input.input_functions import (in_between_check, numeric_input,
+                                        re_enter_wrapper)
 
 
 class ConstantParamaters:
@@ -20,11 +17,10 @@ class ConstantParamaters:
             
 
         Returns:
-            str: string of name refering to the molecular file used.
+            str: name refering to the molecular file used.
         """
         
-        user_molfile = input(
-            "Enter molecular file path '*.dat': ").replace(' ', '')
+        user_molfile = input("Enter molecular file path '*.dat': ")
         if user_molfile == '':
             raise FileNotFoundError("User did not supply a " +
                                     "molecular file")
@@ -44,11 +40,10 @@ class ConstantParamaters:
             
 
         Returns:
-            str: string of name refering to the molecular file used.
+            str: name referring to the observed spectra file used.
         """
 
-        user_datafile = input(
-            "Enter data file path '*.dat': ").replace(' ', '')
+        user_datafile = input("Enter data file path '*.dat': ")
         if user_datafile == '':
             raise FileNotFoundError("User did not supply a " +
                                     "data file path")

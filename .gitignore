@@ -1,0 +1,17 @@
+# test data files
+RnD_tools/
+
+# LAMDA datafiles https://home.strw.leidenuniv.nl/~moldata/
+moldata/
+
+# output folder
+output/
+
+# ipynb notebook checkpoints
+.ipynb_checkpoints
+
+# IDE: VS Code settings
+.vscode
+
+# byte-compiled / optimized files
+**/__pycache__/
