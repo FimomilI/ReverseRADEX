@@ -149,19 +149,20 @@ def find_initial_parameter_guesses(kinetic_temperature, column_density,
     cd_min, cd_max           = cd_limits
     voldens_min, voldens_max = voldens['min_max']
     
-    num_points_tkin = int((Tkin_max - Tkin_min) / 40)
+    # FIXME: just use np.arange() or something for num_points?
+    num_points_tkin = int((Tkin_max - Tkin_min) / 30)
     if num_points_tkin < 5:
         num_points_tkin = 5
     elif num_points_tkin > 30:
         num_points_tkin = 30
 
-    num_points_cd = int(log10(cd_max) - log10(cd_min)) - 1
+    num_points_cd = int((log10(cd_max) - log10(cd_min)) / 2)
     if num_points_cd < 5:
         num_points_cd = 5
 
     # FIXME: what if multiple collision partners are fit, it will be a very
     # large grid and take a long time just to find initial parameters.
-    num_points_voldens = int(log10(voldens_max) - log10(voldens_min)) + 3
+    num_points_voldens = int((log10(voldens_max) - log10(voldens_min)) / 2)
     if num_points_voldens < 7:
         num_points_voldens = 7
     
