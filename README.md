@@ -1,11 +1,11 @@
-<div id="header" align="center" style="border: 4px solid #ccc; border-radius: 50px; padding: .5em .5em;">
-  <!-- add a banner image with text "ReverseRadex" or something? maybe an image of a spectrum? ALSO add badges for; version?, which python versions are supported, which platform/OS is supported ... -->
-  <big style="font-size:42px;">ReverseRADEX</big>
-  
-  <br />
+# ReverseRADEX
+
+<div id="header" align="center">
 
   [![pythonV](https://img.shields.io/badge/python-3.6+-blue?style=for-the-badge)](https://www.python.org) [![MIT](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](./LICENSE) ![development](https://img.shields.io/badge/development-inactive/sporadic-red?style=for-the-badge)
 </div>
+
+---
 
 <br />
 
@@ -13,7 +13,7 @@ ReverseRADEX is a tool to quickly gauge the physical conditions in a gas cloud f
 
 What ReverseRADEX offers:
 
-- 
+-
 <!-- itemized key features?
 - LAMDA file format
 - Chain algorithm optimization
@@ -113,7 +113,8 @@ To obtain optimal parameter estimates + uncertainties, ReverseRADEX employs an a
 
 <br />
 
-See the following BSc thesis, [fse.studenttheses.ub.rug.nl/ReverseRADEX](http://fse.studenttheses.ub.rug.nl/id/eprint/25088), for further details on and discussing of (the development of) ReverseRADEX.
+> **Note**
+> See the following BSc thesis, [fse.studenttheses.ub.rug.nl/ReverseRADEX](http://fse.studenttheses.ub.rug.nl/id/eprint/25088), for further details on and discussing of (the development of) ReverseRADEX.
 
 <br />
 
@@ -210,13 +211,15 @@ ReverseRADEX has been developed (and tested) using python 3.6 but I expect it to
   **Table 1:** The main dependencies of ReverseRADEX, listed in [requirements.txt](./requirements.txt "requirements.txt").
 </div>
 
-The only tested operating system is (Ubuntu) Linux but ReverseRADEX should be able to run on other platforms (like MacOS, Windows) as well. \
-I tried running SpectralRadex on Windows in the past but to no avail. The author(s) of Spectralradex do claim [OS independence](https://github.com/uclchem/SpectralRadex/blob/20768fdf577bd38b40f98cee0eb97400c48443a2/setup.py#L41) however.
+The only tested operating system is (Ubuntu) Linux but ReverseRADEX should be able to run on other platforms (like MacOS, Windows) as well.
+
+> **Note**
+> I tried running SpectralRadex on Windows in the past but to no avail. The author(s) of Spectralradex do claim [OS independence](https://github.com/uclchem/SpectralRadex/blob/20768fdf577bd38b40f98cee0eb97400c48443a2/setup.py#L41) however.
 
 
 ### Installation
 
-To install ReverseRADEX, it is **recommended** to create a virtual python (3.6) environment (e.g. using [venv](https://docs.python.org/3/library/venv.html)) and pip install the [requirements.txt](./requirements.txt "requirements.txt") file,
+To install ReverseRADEX, it is **recommended** to create a virtual python environment (e.g. using [venv](https://docs.python.org/3/library/venv.html)) and pip install the [requirements.txt](./requirements.txt "requirements.txt") file,
 
 ```shell
 pip install requirements.txt
@@ -489,7 +492,7 @@ same output as terminal pretty much but then in Jupyter notebook...
 <!-- have hyperlinks to the commits of each version name (use this so for future renditions of the project the changelog can be automated more easily? USE and REFERENCE https://semver.org/ ? -->
 <!-- Have a separate branch named "utilities" where there is a detailed changelog once this gets too much? AND that is also where the images used in this README.md are hosted? AND where you can find the licenses of all other software used like spectralradex and RADEX? BUT do refer to these in README.md, just store them in separate branch -->
 
-
+<!-- FIXME: change these hard coded links to old gitlab repo? -->
 [`Version 0.1.2`](https://gitlab.astro.rug.nl/mooren/reverseradex/-/tree/4a8fee6383ca2b950c8b322d96f3917077f8b621)
 <!-- include version number somewhere in package from this point onwards? -->
 
@@ -502,7 +505,7 @@ same output as terminal pretty much but then in Jupyter notebook...
 [`Version 0.1.1`](https://gitlab.astro.rug.nl/mooren/reverseradex/-/tree/03fc6c7b3577dc487e473dfefc20a8ed6b108081)
 <!-- the fix in main.py and main.ipynb or whatever? + Typos in README.md + added license + ??? -->
 
-- 
+-
 
 <br />
 
