@@ -10,9 +10,11 @@ from numpy import (
     savetxt,
     array,
     diff,
+    sort,
     full,
     NaN
 )
+import numpy as np
 from pandas import read_csv
 
 
@@ -45,6 +47,54 @@ class SaveResults:
         self.constant_parameters  = constant_parameters
         self.fit_parameters_names = fit_parameters_names
         return
+    
+    
+    # CRED: http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2015/tutorials/l06_credible_regions.html
+    def hpd(self, i, mass_frac):
+        # """
+        # Returns highest probability density region given by
+        # a set of samples.
+
+        # Parameters
+        # ----------
+        # trace : array
+        #     1D array of MCMC samples for a single variable
+        # mass_frac : float with 0 < mass_frac <= 1
+        #     The fraction of the probability to be included in
+        #     the HPD.  For example, `massfrac` = 0.95 gives a
+        #     95% HPD.
+            
+        # Returns
+        # -------
+        # output : array, shape (2,)
+        #     The bounds of the HPD
+        # """
+        
+        trace = self.sampler.get_chain(discard=100, flat=True)[:,i]
+        
+        # Get sorted list
+        d = np.sort(np.copy(trace))
+
+        # Number of total samples taken
+        n = len(trace)
+        
+        # Get number of samples that should be included in HPD
+        n_samples = np.floor(mass_frac * n).astype(int)
+        
+        # Get width (in units of data) of all intervals with n_samples samples
+        int_width = d[n_samples:] - d[:n-n_samples]
+        
+        # Pick out minimal interval
+        min_int = np.argmin(int_width)
+        
+        # mode = self.sampler.get_chain(discard=100, flat=True) [np.argmax(self.sampler.flatlnprobability)][i]
+        # FIXME: make sure this is actually the mode, it does not look correct
+        # in the corner plot? as in, the "truth" line is not at the maximum of
+        # the histogram?
+        mode = self.sampler.get_chain(discard=100, flat=True) [np.argmax(self.sampler.get_log_prob(discard=100, flat=True))][i]
+        
+        # Return interval
+        return np.array([d[min_int], mode, d[min_int+n_samples]])
 
 
     # FIXME: add log10(...) in string when outputting data values, instead
@@ -95,30 +145,44 @@ class SaveResults:
                     )
 
             
-            header = f"Percental:   50%   |   16%   |   84%   "
+            # header = f"Percental:   50%   |   16%   |   84%   "
+            sigma = 0.68  # 1 standard deviation, although 95% seems more common with (MCMC) confidence intervals?
+            header = f"{100*sigma}% confidence interval around mode"
             print(header)
             prms_txt.write('\n' + header)
             for i, parameter_name in enumerate(self.fit_parameters_names):
-                # obtaining the median and upper and lower uncertainties
-                # that enclose 1 sigma.
-                parameter_uncertainty_estimates = percentile(
-                    self.sampler.get_chain(discard=100, flat=True)[:, i],
-                    q=[16, 50, 84]
-                )
-                uncertainties = diff(parameter_uncertainty_estimates)
+                # # obtaining the median and upper and lower uncertainties
+                # # that enclose 1 sigma.
+                # parameter_uncertainty_estimates = percentile(
+                #     self.sampler.get_chain(discard=100, flat=True)[:, i],
+                #     q=[16, 50, 84]
+                # )
+                # uncertainties = diff(parameter_uncertainty_estimates)
                 
-                median = parameter_uncertainty_estimates[1]
-                prm_16, prm_84 = uncertainties
+                # median = parameter_uncertainty_estimates[1]
+                # prm_16, prm_84 = uncertainties
                 
-                parameter_50s += [median]
+                # parameter_50s += [median]
 
+                # parameter_summary = (
+                #     f"log10({parameter_name})    : {median:.5f} | -" +
+                #     f"{prm_16:.5f} | +{prm_84:.5f}"
+                # )
+                
+                
+                # FIXME / NOTE: this is no longer the median=50% nor 16%, 84%, unless it is a symetric gaussian?
+                confidence = self.hpd(i, sigma)
+                parameter_50s += [confidence[1]]
+                lci, uci = diff(confidence)
                 parameter_summary = (
-                    f"log10({parameter_name})    : {median:.5f} | -" +
-                    f"{prm_16:.5f} | +{prm_84:.5f}"
+                    f"log10({parameter_name})    : {parameter_50s[i]:.5f} | -" +
+                    f"{lci:.5f} | +{uci:.5f}"
                 )
+                
+                
+                
                 print(parameter_summary)
                 prms_txt.write('\n' + parameter_summary)
-
 
         return parameter_50s
 
