@@ -6,7 +6,7 @@ from .save_plot_helper import RADEX_model_plot
 # module imports
 from matplotlib.pyplot import figure, show
 import matplotlib.pyplot as plt
-from numpy import exp
+import numpy as np
 from numpy.random import randint
 import warnings
 import corner
@@ -71,7 +71,7 @@ class Plotting:
         flat_samples = self.sampler.get_chain(discard=100, flat=True)
         fig = corner.corner(
             flat_samples, labels=self.plot_labels, truths=self.parameter_50s,
-            quantiles=(0.16, 0.84), levels=(1 - exp(-0.5),), smooth=True,
+            quantiles=(0.16, 0.84), levels=(1 - np.exp(-0.5),), smooth=True,
             label_kwargs={'fontsize':15}
         )
 
@@ -111,9 +111,9 @@ class Plotting:
         """
 
         unit_labels = {
-            'T_R (K)':r'T$_{\mathrm{R}}$ [K]',
-            'FLUX (K*km/s)':r'$\mathcal{F}$ [K km s$^{-1}$}]',
-            'FLUX (erg/cm2/s)':r'$\mathcal{F}$ [erg cm$^{-2}$ s$^{-1}$]'
+            'T_R (K)':r'T$_R$ [K]',
+            'FLUX (K*km/s)':r'F [K km s$^{-1}$}]',
+            'FLUX (erg/cm2/s)':r'F [erg cm$^{-2}$ s$^{-1}$]'
         }
 
         fig   = figure(figsize=(15,10.5))
@@ -166,7 +166,7 @@ class Plotting:
             frame.errorbar(frequencies, line_strength_y,
                            yerr=line_strength_err,
                            marker='.', fmt=',', mew=3, ms=13, linewidth=1,
-                           capsize=3, capthick=1,
+                           capsize=3, capthick=1, alpha=0.66,
                            color='dodgerblue', ecolor='black',
                            label='Observed data', zorder=10)
         ## ignore UserWarning ##
@@ -174,13 +174,20 @@ class Plotting:
 
         # FIXME: make sure that this legend placement is sufficient
         # for every molecule?
-        frame.legend(fontsize=16, fancybox=True, shadow=True, ncol=1,
-                     loc='upper right', bbox_to_anchor=(0.975, 0.9678))
+        frame.legend(fontsize=16, fancybox=False, shadow=False, ncol=1,
+                     frameon=False, loc='upper left',
+                     bbox_to_anchor=(-0.01, 0.97275))
         frame.set_xlabel(r'$\nu$ [GHz]', fontsize=21)
         frame.set_ylabel(unit_labels[unit_name], fontsize=21)
         frame.yaxis.offsetText.set_fontsize(18)
         frame.set_axisbelow(True)
         frame.grid(True)
+        frame.set_yscale('log')
+        frame.set_ylim(
+            line_strength_y.min()-5*line_strength_err[np.argmin(line_strength_y)],
+            line_strength_y.max()+5*line_strength_err[np.argmax(line_strength_y)]
+        )
+        frame.set_xlim(min(frequencies)-100, max(frequencies)+100)
 
         frame.tick_params(axis='both', direction='in', which='major',
                           length=10, width=1, labelsize=18)
