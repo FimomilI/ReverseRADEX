@@ -9,11 +9,14 @@
 
 <br />
 
+> **Important**
+> Beware, this program has not undergone rigorous testing. Testing has primairly been performed using only the [CO](https://home.strw.leidenuniv.nl/~moldata/CO.html) molecule.
+
+
 ReverseRADEX is a tool to quickly gauge the physical conditions in a gas cloud from line spectra. [RADEX](https://personal.sron.nl/~vdtak/radex/index.shtml) is a 1D non-LTE radiative transfer code that assumes a homogeneous isothermal gas cloud. Where the medium is described using the [escape probability formalism](https://www.aanda.org/articles/aa/full/2007/23/aa6820-06/aa6820-06.right.html#SECTION00033000000000000000 "Escape probability implementation in RADEX") to first order.
 
-What ReverseRADEX offers:
-
--
+<!-- What ReverseRADEX offers: -->
+<!-- - -->
 <!-- itemized key features?
 - LAMDA file format
 - Chain algorithm optimization
@@ -25,9 +28,6 @@ What ReverseRADEX offers:
 
 
 <br />
-
-RADEX was originally written in Fortran but implemented in ReverseRADEX via a python wrapper package, [GitHub/uclchem/SpectralRadex](https://github.com/uclchem/SpectralRadex). In addition to wrapping the source code, it was also modernized to introducing proper multiprocessing capabilities. \
-The supported (file format for the) molecular data is maintained in the Leiden Atomic and Molecular Database, [LAMDA](https://home.strw.leidenuniv.nl/~moldata/).
 
 Highlighted in Figure [1](#Figure1) is the benefit of ReverseRADEX over regular RADEX. It automates the optimization process of matching model spectra to observed line spectra.
 
@@ -113,6 +113,9 @@ To obtain optimal parameter estimates + uncertainties, ReverseRADEX employs an a
 
 <br />
 
+RADEX was originally written in Fortran but implemented in ReverseRADEX via a python wrapper package, [GitHub/uclchem/SpectralRadex](https://github.com/uclchem/SpectralRadex). In addition to wrapping the source code, it was also modernized to introducing proper multiprocessing capabilities. \
+The supported (file format for the) molecular data is maintained in the Leiden Atomic and Molecular Database, [LAMDA](https://home.strw.leidenuniv.nl/~moldata/).
+
 > **Note**
 > See the following BSc thesis, [fse.studenttheses.ub.rug.nl/ReverseRADEX](http://fse.studenttheses.ub.rug.nl/id/eprint/25088), for further details on and discussing of (the development of) ReverseRADEX.
 
@@ -129,15 +132,7 @@ To obtain optimal parameter estimates + uncertainties, ReverseRADEX employs an a
   - [Dependencies](#dependencies)
   - [Installation](#installation)
 - [Usage](#usage)
-  - [Input](#input)
-    - [terminal](#terminal)
-    - [Jupyter notebook](#jupyter-notebook)
-  - [output (files)](#output-files)
-    - [Console](#console)
-    - [csv](#csv)
-    - [chains/walkers?](#chainswalkers)
-    - [plots?](#plots)
-- [3. Version History/changelog](#3-version-historychangelog)
+- [output](#output)
 - [License(s)](#licenses)
 - [Acknowledgments](#acknowledgments)
 
@@ -169,7 +164,6 @@ To obtain optimal parameter estimates + uncertainties, ReverseRADEX employs an a
   &nbsp; │ &emsp;&nbsp;&nbsp; ├── [read_user_data.py](./user_input/read_user_data.py) <br />
   &nbsp; │ &emsp;&nbsp;&nbsp; ├── [variable_input.py](./user_input/variable_input.py) <br />
   &nbsp; │ &emsp;&nbsp;&nbsp; └── [\_\_init__.py](./user_input/\__init__.py) <br />
-  &nbsp; ├── [main.ipynb](./main.ipynb) <br />
   &nbsp; └── [main.py](./main.py) <br />
 
 
@@ -184,21 +178,21 @@ To obtain optimal parameter estimates + uncertainties, ReverseRADEX employs an a
 
 ### Dependencies
 
-ReverseRADEX has been developed (and tested) using python 3.6 but I expect it to work on later versions as well. The specific python modules required to run ReverseRADEX are listed in Table [1](#dependencies). But again, ReverseRADEX might work using different versions of the modules as well.
+ReverseRADEX has been developed (and tested) using python 3.6 but I expect it to work on later versions as well. The specific python modules required to run ReverseRADEX are listed in Table [1](#dependencies). But again, ReverseRADEX presumably works using different versions of the modules as well.
 
 <br />
 
 <div id="dependencies" align="center">
 
-  | module          | version |  required  |
-  | :-------------- | :-----: | :--------: |
-  | [corner]        |  2.2.1  | [x] <br /> |
-  | [emcee]         |  3.1.2  | [x] <br /> |
-  | [matplotlib]    |  3.3.4  | [x] <br /> |
-  | [numpy]         | 1.19.5  | [x] <br /> |
-  | [pandas]        |  1.1.5  | [x] <br /> |
-  | [scipy]         |  1.5.4  | [x] <br /> |
-  | [spectralradex] |  1.1.3  | [x] <br /> |
+  | module          | version |
+  | :-------------- | :-----: |
+  | [corner]        |  2.2.1  |
+  | [emcee]         |  3.1.2  |
+  | [matplotlib]    |  3.3.4  |
+  | [numpy]         | 1.19.5  |
+  | [pandas]        |  1.1.5  |
+  | [scipy]         |  1.5.4  |
+  | [spectralradex] |  1.1.3  |
 
   [corner]: https://www.pypi.org/project/corner/2.2.1
   [emcee]: https://www.pypi.org/project/emcee/3.1.2
@@ -219,7 +213,7 @@ The only tested operating system is (Ubuntu) Linux but ReverseRADEX should be ab
 
 ### Installation
 
-To install ReverseRADEX, it is **recommended** to create a virtual python environment (e.g. using [venv](https://docs.python.org/3/library/venv.html)) and pip install the [requirements.txt](./requirements.txt "requirements.txt") file,
+To *install* ReverseRADEX, it is **recommended** to create a virtual python environment (e.g. using [venv](https://docs.python.org/3/library/venv.html)) and pip install the [requirements.txt](./requirements.txt "requirements.txt") file,
 
 ```shell
 pip install requirements.txt
@@ -242,6 +236,78 @@ pip install requirements.txt
 of some?
 ALSO sub-sections for input and output? or have output be an entirely different section. +++ output folder is created, mention what name and where!-->
 
+You can either provide a config file
+
+```shell
+python main.py -config config.ini
+```
+
+where config.ini is,
+
+```ini
+# Configure the ReverseRADEX settings
+[PATHS]
+reverseradex_dir = /home/user/
+# path to LAMDA compliant format molecular data file
+MolecularFile = '%(reverseradex_dir)s/co.dat'
+# path to (observed) spectral data file
+SpectraFile = '%(reverseradex_dir)s/data.dat'
+
+[CONSTANT_PARAMETERS]
+# background radiation field temperature [K]
+BackgroundTemperature = 2.73
+# line width [km/s]
+LineWidth = 1.0
+# (1=uniform sphere, 2=LVG, 3=slab)
+Geometry = [1, 'uniform sphere']
+
+# [name parameter, initial guess, (bound_low, bound_upp), fit parameter?]
+[VARIABLE_PARAMETERS]
+# kinetic temperature: 0.1 < tkin < 1e4 [K]
+Tkin = ['tkin', 100.0, (5.0, 750.0), True]
+# column density: 1e5 < cdmol 1e25 [cm^-2]
+Coldens = ['cdmol', 1e19, (1e13, 1e24), True]
+# volume densities: 1e-3 < coll partner < 1e13 [cm^-3]
+# NOTE: the indentation is needed to correctly interpret 'Voldens' as a dict.
+Voldens = {'h2':(1e4, True),
+           'h':(0.0, False),
+           'e-':(0.0, False),
+           'p-h2':(0, False),
+           'o-h2':(0.0, False),
+           'h+':(0.0, False),
+           'he':(0.0, False),
+           'min_max':(1e2, 1e8)}
+```
+
+
+where `MolecularFile` is from [LAMDA](https://home.strw.leidenuniv.nl/~moldata/) and `SpectraFile` are your observed line intensities that need to be provided as follows,
+
+
+```dat
+#3
+115.271  8.7e-07  8.7e-08
+230.538  6.6e-06  6.6e-07
+461.041  4.7e-05  4.7e-06
+691.473  1.3e-04  1.4e-05
+1267.014  3.4e-04  3.5e-05
+1496.922  4.0e-05  4.0e-06
+1611.793  5.3e-06  5.3e-07
+```
+
+where the first column represents the line frequencies \[GHz\], the second collumn gives the corresponding intensity and a final (optional) column with the standard deviations. The first line must be the units of the provided data,
+
+<div align="center">
+
+| # | unit |
+| :--: | :-- |
+| #1 | T$_R$ \[K\] |
+| #2 | flux \[K km s$^{-1}$\] |
+| #3 | flux \[erg cm$^{-2}$ s$^{-1}$ \] |
+
+</div>
+
+You can also run it without the config, if you want to enter each argument individually by hand,
+
 ```shell
 python main.py
 ```
@@ -250,212 +316,8 @@ python main.py
 
 <!-- example? main.py and main.ipynb way with gifs/figures? -->
 <!-- figure out how to link to files in the reverseradex folder? -->
-run main.py or main.ipynb if you prefer not to use a terminal. Pre-applied settings are present in main.ipynb (3rd cell). \
-*datfile.dat* is the observed data file with a header (the first line starting with \#) indicating what units are used (1: T_R [K], 2: F [K km s$^{−1}$], 3: F [erg cm$^{−2}$ s$^{−1}$] (e.g. "# 1" means the units are intensities T_R). The first column contains the frequencies in GHz, the 2nd column indicates the line strengths in terms of the specified units in the header, and the last column contains the uncertainties (leave blank if no uncertainties). \
-*molfile.dat* is the molecular data file containing collision and spectroscopic information, following the format of the Leiden Atomic and Molecular Database ([LAMDA](https://home.strw.leidenuniv.nl/~moldata/)).
-
-The program runs on its own after than and in the case of main.py (terminal version), the input should be self explanatory beyond what is stated above.
-
-A better README should follow soon.
 
 
-
-
-### Input
-
-#### terminal
-
-asked line by line...
-
-<details closed>
-  <summary>
-    Entering parameters (click me)
-  </summary>
-  <br />
-
-  ```shell
-  python main.py
-  ```
-
-  results in ...
-
-  ```shell
-  Enter molecular file path '*.dat': <full_path_to_molecular_data.dat>
-  Enter data file path '*.dat': <full_path_to_spectra_data.dat>
-  Enter background radiation field [K]: 2.73
-  Enter line  width [km/s]: 1
-  Enter a geometry (1=sphere, 2=LVG, 3=slab): 1
-  Fit the kinetic temperature? (y/n): y
-  Enter minimum kinetic gas temperature [K]: 5
-  Enter maximum kinetic gas temperature [K]: 150
-  Fit the column density? (y/n): y
-  Enter minimum column density [cm^-2]: 1e17
-  Enter maximum column density [cm^-2]: 1e21
-  Enter (another) collision partner's name ['h2', 'h', 'e-', 'p-h2', 'o-h2', 'h+', 'he'] or enter 'no' if not: h2
-  Fit h2's density? (y/n): y
-  Enter minimum volume density [cm^-3] for all collision partners: 1e3
-  Enter maximum volume density [cm^-3] for all collision partners: 1e7
-  Enter (another) collision partner's name ['h', 'e-', 'p-h2', 'o-h2', 'h+', 'he'] or enter 'no' if not: n
-  ```
-
-</details>
-
-
-this results in the following overview of the input parameters...
-
-
-<details closed>
-  <summary>
-    parameter overview
-  </summary>
-  <br />
-
-  ```shell
-  Selected molfile path              : '<full_path_to_molecular_data.dat>'
-  Selected datafile path             : '<full_path_to_spectra_data.dat>'
-  Selected line strength units       : FLUX (erg/cm2/s)
-  uncertainties included             : yes
-
-
-  [name of parameter, parameter value, (lower bound, upper bound), fit parameter?]
-  If a parameter is fit, "parameter value" is a dummy number and can be ignored.
-  If not fit, the boundaries are dummy numbers.
-  0.0 just indicates SpectralRadex to not use this collision partner.
-
-  Selected minimum and maximum
-  kinetic gas cloud temperature      : ['tkin', 72.5, (5.0, 150.0), True] K
-  Selected background radiation field: 2.73 K
-  Selected minimum and maximum
-  column densities                   : ['cdmol', 4.9995e+20, (1e+17, 1e+21), True] cm^-2
-  Selected volume densities [cm^-3],
-  h2                                 : ['h2', 4999500.0, (1000.0, 10000000.0), True]
-  h                                  : ['h', 0.0, (1000.0, 10000000.0), False]
-  e-                                 : ['e-', 0.0, (1000.0, 10000000.0), False]
-  p-h2                               : ['p-h2', 0.0, (1000.0, 10000000.0), False]
-  o-h2                               : ['o-h2', 0.0, (1000.0, 10000000.0), False]
-  h+                                 : ['h+', 0.0, (1000.0, 10000000.0), False]
-  he                                 : ['he', 0.0, (1000.0, 10000000.0), False]
-  Selected line width                : 1.0 km/s
-  Selected minimum and maximum
-  frequency                          : (230.30746200000002, 1268.2827687687688) GHz
-  Selected geometry                  : uniform sphere
-
-  Continue to the fitting process? (y/n)
-  ```
-
-</details>
-
-
-which ends with the request of continuing to the fitting process if the input parameters are to your liking. This looks as follows ...
-
-
-<details closed>
-  <summary>
-    fitting process
-  </summary>
-  <br />
-
-  ```shell
-  
-  ```
-
-</details>
-
-
-
-<br />
-
-#### Jupyter notebook
-
-<!-- should be identical to main.py but just as a jupyter notebook? test this or mention the differences if there are any -->
-
-same output as terminal pretty much but then in Jupyter notebook...
-
-<details closed>
-  <summary>
-    main.ipynb (cell 2: input)
-  </summary>
-  <br />
-
-  <!-- This is cell 2 in [main.ipynb](./main.ipynb) where user_molfile is the molecular data file from LAMDA and user_datfile are the observed line data. -->
-
-  ```python
-  user_molfile  = '<full_path_to_molecular_data.dat>'  # LAMDA database
-  user_datfile  = '<full_path_to_spectra_data.dat>'  # observations
-  freq_indices  = data_retrieval.get_molfile_frequency_index(user_datfile,
-                                                            user_molfile)
-  freq          = data_retrieval.get_frequencies(freq_indices, user_molfile)
-  user_mol_frequencies, freq_min, freq_max, number_of_lines_total = freq
-  freq_range    = (freq_min, freq_max)
-
-
-  units             = data_retrieval.get_user_units(user_datfile)
-  uncertainties     = data_retrieval.uncertainties_included(user_datfile)
-  (y_observed,
-  y_uncertainties) = data_retrieval.line_strengths(user_datfile,
-                                                    uncertainties)
-
-  # variable parameters.
-  # [name parameter, inital guess, (bound_low, bound_upp), fit the parameter?]
-  temp_kin = ['tkin', 131, (10.0, 750.0), True]  # 0.1 < tkin < 1e4 [K]
-  coldens  = ['cdmol', 3e16, (1e10, 5e21), True]  # 1e5 < cdmol 1e25 [cm^-2]
-  # 'collision partner':(init guess, fit parameter?)
-  voldens  = {
-      'h2':(3e4, True), 'h':(0.0, False), 'e-':(0.0, False),
-      'p-h2':(0, False), 'o-h2':(0.0, False), 'h+':(0.0, False),
-      'he':(0.0, False), 'min_max':(1e3, 1e7)
-  }  # 1e-3 < collision partner < 1e13 [cm^-3]
-
-  # constant parameters.
-  Tbg  = 2.73  # K
-  dv   = 1.0   # km s^-1
-  geom = 1     #(1=sphere, 2=LVG, 3=slab)
-  # just for displaying purposes,
-  geom_name = 'uniform sphere'
-  ```
-
-</details>
-
-<!-- link to the output thing in console part that will also happen here but just in jupyter cells? -->
-
-<br />
-
-
-#### Configuration file
-
-<details closed>
-  <summary>
-    config.ini
-  </summary>
-  <br />
-
-  ...
-
-  <!-- the indentation is for readability, see [docs.python.org/configparser/indentation](https://docs.python.org/3/library/configparser.html#:~:text=multiline_values,value) for how python handles indentation as if its a single line such that types can be inferred using [docs.python.org/eval](https://docs.python.org/3/library/functions.html?highlight=eval#eval) as normal. -->
-
-  ```ini
-  ...
-  ```
-
-</details>
-
-<!-- link to the output thing in console part that will also happen here but just in jupyter cells? -->
-
-<br />
-
-
-### output (files)
-
-#### Console
-
-
-#### csv
-
-
-#### chains/walkers?
-<!-- output to do your own statistics with AND/OR GTC corner plot? -->
-
-#### plots?
 
 
 
@@ -467,52 +329,45 @@ same output as terminal pretty much but then in Jupyter notebook...
 
 ---
 
+## Output
+
+An overview of the input + parameter estimates (simply the median and 16th and 84th quartiles) are provided.
+
+```bash
+Data file used: <path to data.dat>
+Line (frequencies [Hz]) used: 115.2712018, 230.538, 461.0407682, 691.4730763, 1267.014486, 1496.922909, 1611.793518
+tbg = 2.73
+fmin = 0
+fmax = 30000000
+linewidth = 1.0
+geometry = 1
+molfile = <path to moldata.dat>
+h = 0.0
+e- = 0.0
+p-h2 = 0
+o-h2 = 0.0
+h+ = 0.0
+he = 0.0
+tkin's parameter boundaries: (0.6989700043360189, 2.8750612633917)
+cdmol's parameter boundaries: (13.0, 24.0)
+h2's parameter boundaries: (2.0, 8.0)
+
+Percental:    50%    |    16%    |    84%    |
+log10(tkin): 1.64313 | -0.01791 | +0.01687
+log10(cdmol): 19.77129 | -0.78429 | +1.20455
+log10(h2): 4.39320 | -1.07087 | +0.80508
+```
+
+As well as plot of the line spectrum with some MCMC iterations shown as green boxes to represent the *uncertainty* in the reproduction of the observations,
+
+![spectrum](img/spectrum.png)
+
+And a corner plot of the parameter space,
+
+![MCMC](img/MCMC_corner_plot.png)
 
 
-<!-- ## FAQ <!-- rename to something that includes warnings or issues or something? e.g "known issues"? but that is only issues? so little more general? (one "issue" would be that brute force grid search could get stuck in local minima easily unless computation time is heavily increased, defeating the point of having a "quick" way to obtain some results) -->
 
-<!-- ADD THAT THE INITIAL BRUTE FORCE GRID SEARCH SOMETIMES GETS STUCK IN LOCAL MINIMA AND THUS THE LM AND MCMC ALGORITHMS ARE OPTIMIZING IN A LOCAL MINIMA (see BSc thesis sec 7.? for further details?) [MAYBE hIhLgiHT ThIS at The TOp As WEll] -->
-
-<!-- See sec 4.2 of BSc thesis + van der Tak 2007 about RADEX assumptions/limitations. AND see sec 7 (discussion?, maybe sec 5-reverseradex with limitations/assumptions section?) About assumptions/limitations with regards to Reverseradex. -->
-
-
-<br />
-
-<br />
-<div align="right">
-
-  [![header](https://img.shields.io/badge/back_to-TOC-grey?style=flat-square)](#table-of-contents)
-</div>
-
----
-
-
-
-## 3. Version History/changelog
-<!-- have hyperlinks to the commits of each version name (use this so for future renditions of the project the changelog can be automated more easily? USE and REFERENCE https://semver.org/ ? -->
-<!-- Have a separate branch named "utilities" where there is a detailed changelog once this gets too much? AND that is also where the images used in this README.md are hosted? AND where you can find the licenses of all other software used like spectralradex and RADEX? BUT do refer to these in README.md, just store them in separate branch -->
-
-<!-- FIXME: change these hard coded links to old gitlab repo? -->
-[`Version 0.1.2`](https://gitlab.astro.rug.nl/mooren/reverseradex/-/tree/4a8fee6383ca2b950c8b322d96f3917077f8b621)
-<!-- include version number somewhere in package from this point onwards? -->
-
-- **Updated** README to include proper instructions.
-- **Fixed** output folder not being created due to missing parent folder.
-
-<br />
-
-
-[`Version 0.1.1`](https://gitlab.astro.rug.nl/mooren/reverseradex/-/tree/03fc6c7b3577dc487e473dfefc20a8ed6b108081)
-<!-- the fix in main.py and main.ipynb or whatever? + Typos in README.md + added license + ??? -->
-
--
-
-<br />
-
-
-[`Version 0.1`](https://gitlab.astro.rug.nl/mooren/reverseradex/-/tree/03fc6c7b3577dc487e473dfefc20a8ed6b108081)
-
-- Initial ***Release***
 
 
 <br />
@@ -522,7 +377,6 @@ same output as terminal pretty much but then in Jupyter notebook...
 </div>
 
 ---
-
 
 
 <!-- ## Work in Progress/Roadmap? (if I decide to work some more on the project and what the future goals are?)
@@ -579,9 +433,8 @@ Also a brief description on how it is different?
 
 
 ## Acknowledgments
-<!-- something for a readme template?, idk -->
 
-This program was developed under the supervision of Prof. Dr. Floris F.S van der Tak.
+This program was developed under the supervision of Prof. Dr. Floris F.S van der Tak, leading to the following BSc thesis [fse.studenttheses.ub.rug.nl/ReverseRADEX](http://fse.studenttheses.ub.rug.nl/id/eprint/25088), with relevant references listed therin.
 
 <br />
 
