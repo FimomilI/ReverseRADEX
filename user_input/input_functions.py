@@ -132,7 +132,7 @@ def in_between_check(parameter_min, parameter_max,
     """
     
     # FIXME: make it clear when it talks about user defined limits and when
-    # it discusses radex limits?
+    # it discusses radex limits? radex limits are exclusive!
     if not (parameter_min < parameter_value < parameter_max):
         print(f"{parameter_name} = {parameter_value}, " +
               "is not within the limits of " +
