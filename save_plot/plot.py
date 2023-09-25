@@ -17,6 +17,7 @@ class Plotting:
                  sampler,
                  output_path,
                  parameter_50s,
+                 parameter_MAP,
                  fit_parameter_names):
         """class used for plotting.
 
@@ -37,6 +38,7 @@ class Plotting:
         self.sampler             = sampler
         self.output_path         = output_path
         self.parameter_50s       = parameter_50s
+        self.parameter_MAP       = parameter_MAP
         self.fit_parameter_names = fit_parameter_names
 
         # FIXME: put in the molecule name for column density.
@@ -70,10 +72,17 @@ class Plotting:
         """
         flat_samples = self.sampler.get_chain(discard=100, flat=True)
         fig = corner.corner(
-            flat_samples, labels=self.plot_labels, truths=self.parameter_50s,
+            flat_samples, labels=self.plot_labels, #truths=self.parameter_50s,
             quantiles=(0.16, 0.84), levels=(1 - np.exp(-0.5),), smooth=True,
             label_kwargs={'fontsize':15}
         )
+        corner.overplot_lines(fig, self.parameter_50s, label="median")
+        # corner.overplot_lines(fig, self.parameter_MAP, color="C2", label="MAP")
+        
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        fig.legend(by_label.values(), by_label.keys(),
+                   loc='upper right', frameon=False, shadow=False)
 
         plt.close(fig)
         fig.savefig(f'{self.output_path}/MCMC_corner_plot.png',
@@ -141,7 +150,7 @@ class Plotting:
                    linestyle = 'None')
 
 
-        # plot RADEX model for the optimal parameter estimates
+        # plot RADEX model for the median parameter estimates
         output_50 = RADEX_model_plot(
             self.fit_parameter_names, constant_parameters,
             self.parameter_50s
@@ -150,7 +159,18 @@ class Plotting:
         line_strengths_50 = output_50[unit_name]
         frame.scatter(freq_50, line_strengths_50,
                       color='#ff7f00', marker='D',
-                      label='RADEX optimal parameters', s=70)
+                      label='RADEX median parameters', s=70)
+        
+        # # plot for maximum posterior?
+        # output_max = RADEX_model_plot(
+        #     self.fit_parameter_names, constant_parameters,
+        #     self.parameter_MAP
+        # )
+        # freq_max           = output_max['freq']
+        # line_strengths_max = output_max[unit_name]
+        # frame.scatter(freq_max, line_strengths_max,
+        #               color='red', marker='x',
+        #               label='RADEX MAP parameters', s=70)
 
 
         ## ignore UserWarning ##
@@ -185,7 +205,8 @@ class Plotting:
         frame.set_yscale('log')
         frame.set_ylim(
             line_strength_y.min()-5*line_strength_err[np.argmin(line_strength_y)],
-            line_strength_y.max()+5*line_strength_err[np.argmax(line_strength_y)]
+            # line_strength_y.max()+5*line_strength_err[np.argmax(line_strength_y)]
+            line_strengths_50.max() + 0.5*line_strengths_50.max()
         )
         frame.set_xlim(min(frequencies)-100, max(frequencies)+100)
 

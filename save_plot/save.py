@@ -70,7 +70,8 @@ class SaveResults:
         #     The bounds of the HPD
         # """
         
-        trace = self.sampler.get_chain(discard=100, flat=True)[:,i]
+        # trace = self.sampler.get_chain(flat=True)[:,i]
+        trace = self.sampler.flatchain[:,i]
         
         # Get sorted list
         d = np.sort(np.copy(trace))
@@ -91,7 +92,8 @@ class SaveResults:
         # FIXME: make sure this is actually the mode, it does not look correct
         # in the corner plot? as in, the "truth" line is not at the maximum of
         # the histogram?
-        mode = self.sampler.get_chain(discard=100, flat=True) [np.argmax(self.sampler.get_log_prob(discard=100, flat=True))][i]
+        # mode = self.sampler.get_chain(discard=100, flat=True) [np.argmax(self.sampler.get_log_prob(discard=100, flat=True))][i]
+        mode = self.sampler.flatchain[np.argmax(self.sampler.flatlnprobability), i]
         
         # Return interval
         return np.array([d[min_int], mode, d[min_int+n_samples]])
@@ -117,7 +119,8 @@ class SaveResults:
             list: parameter medians
         """
         
-        parameter_50s = []
+        parameter_50s = []  # median
+        parameter_MAP = []  # maximum a postiori
         print("\nParameter estimates and accompanying upper and "
               "lower uncertainties,")
         prms_sum_dir = f'{self.output_path}/parameters.txt'
@@ -145,46 +148,54 @@ class SaveResults:
                     )
 
             
-            # header = f"Percental:   50%   |   16%   |   84%   "
-            sigma = 0.68  # 1 standard deviation, although 95% seems more common with (MCMC) confidence intervals?
-            header = f"{100*sigma}% confidence interval around mode"
+            confide_interval = 0.95  # 1 standard deviation, although 95% seems more common with (MCMC) confidence intervals?
+            header = ("Percental:    50%    |    16%    |    84%    |")
+            # header = f"{100*confide_interval}% confidence interval around mode"
             print(header)
             prms_txt.write('\n' + header)
             for i, parameter_name in enumerate(self.fit_parameters_names):
-                # # obtaining the median and upper and lower uncertainties
-                # # that enclose 1 sigma.
-                # parameter_uncertainty_estimates = percentile(
-                #     self.sampler.get_chain(discard=100, flat=True)[:, i],
-                #     q=[16, 50, 84]
-                # )
-                # uncertainties = diff(parameter_uncertainty_estimates)
-                
-                # median = parameter_uncertainty_estimates[1]
-                # prm_16, prm_84 = uncertainties
-                
-                # parameter_50s += [median]
-
-                # parameter_summary = (
-                #     f"log10({parameter_name})    : {median:.5f} | -" +
-                #     f"{prm_16:.5f} | +{prm_84:.5f}"
-                # )
-                
-                
-                # FIXME / NOTE: this is no longer the median=50% nor 16%, 84%, unless it is a symetric gaussian?
-                confidence = self.hpd(i, sigma)
-                parameter_50s += [confidence[1]]
-                lci, uci = diff(confidence)
-                parameter_summary = (
-                    f"log10({parameter_name})    : {parameter_50s[i]:.5f} | -" +
-                    f"{lci:.5f} | +{uci:.5f}"
+                # obtaining the median and upper and lower uncertainties
+                # that enclose 1 sigma.
+                parameter_uncertainty_estimates = percentile(
+                    self.sampler.get_chain(discard=100, flat=True)[:, i],
+                    q=[16, 50, 84]
                 )
+                uncertainties = diff(parameter_uncertainty_estimates)
                 
+                median = parameter_uncertainty_estimates[1]
+                prm_16, prm_84 = uncertainties
                 
-                
-                print(parameter_summary)
-                prms_txt.write('\n' + parameter_summary)
+                parameter_50s += [median]
 
-        return parameter_50s
+                parameter_summary_50 = (
+                    f"log10({parameter_name}): {median:.5f} | -" +
+                    f"{prm_16:.5f} | +{prm_84:.5f}"
+                )
+                print(parameter_summary_50)
+                
+                prms_txt.write('\n' + parameter_summary_50)
+            
+            
+            # header = (
+            #     f"             MAP   |   {int((1-confide_interval)*100):d}%   |" +
+            #     f"   {int(confide_interval*100):d}%"
+            # )
+            # prms_txt.write('\n' + header)
+            # print(header)
+            # for i, parameter_name in enumerate(self.fit_parameters_names):
+            #     confidence = self.hpd(i, confide_interval)
+            #     parameter_MAP += [confidence[1]]
+            #     lci, uci = diff(confidence)
+            #     parameter_summary_MAP = (
+            #         f"log10({parameter_name}): {parameter_MAP[i]:.5f} | -" +
+            #         f"{lci:.5f} | +{uci:.5f}"
+            #     )
+            #     print(parameter_summary_MAP)
+                
+            #     prms_txt.write("\n    " + parameter_summary_MAP)
+
+
+        return parameter_50s, parameter_MAP
 
 
     def save_MCMC_sampler(self):
@@ -236,12 +247,15 @@ class SaveResults:
         """
 
         # this is the only way the function below is called.
-        params_50 = self.print_parameter_uncertainty_estimates(
+        params_50, params_MAP = self.print_parameter_uncertainty_estimates(
             user_datfile, user_frequencies, limits
         )
-        optimal_RADEX = RADEX_model_plot(
+        RADEX_50 = RADEX_model_plot(
             self.fit_parameters_names, self.constant_parameters, params_50
         )
+        # RADEX_MAP = RADEX_model_plot(
+        #     self.fit_parameters_names, self.constant_parameters, params_MAP
+        # )
 
 
         # FIXME: calculate the proper reduced chi^2 of the total fit (not
@@ -257,11 +271,14 @@ class SaveResults:
         # chi2 = full(optimal_RADEX[units].shape[0], NaN)
         # chi2[matching_indices] = chi2_calc
                 
-        csv_path = f'{self.output_path}/RADEX.csv'
+        csv_path = f'{self.output_path}/RADEX'
         # write RADEX output to csv.
-        optimal_RADEX.to_csv(
-            csv_path, sep=',', na_rep='', #float_format='%.5e'
+        RADEX_50.to_csv(
+            csv_path+'_median.csv', sep=',', na_rep='', #float_format='%.5e'
         )
+        # RADEX_MAP.to_csv(
+        #     csv_path+'_MAP.csv', sep=',', na_rep='', #float_format='%.5e'
+        # )
         # # read the RADEX output.
         # csv_file = read_csv(csv_path)
         # # add the chi2 values as the last column.
@@ -271,7 +288,7 @@ class SaveResults:
         #     csv_path, index=False, na_rep='not fit', float_format='%.5e'
         # )
         
-        return params_50
+        return params_50, params_MAP
 
 
 
