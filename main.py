@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from os import getcwd
 from pathlib import Path
 from time import time
+import argparse
 
 from numpy import append, array, full, log10
 
@@ -21,10 +22,19 @@ data_retrieval = DataRetrieval()
 
 
 #%% Read input from config.ini or ask for user input from terminal
-config = ConfigParser()
-config.read('config.ini')
+parser = argparse.ArgumentParser(
+    prog='Reverse RADEX',
+    description='ReverseRADEX is a tool to quickly gauge the physical conditions in a gas cloud from line spectra.',
+    epilog=''
+)
+parser.add_argument('-config', default=None)
+args = parser.parse_args()
 
-if eval(config['USE_CONFIG']['UseConfig']) is True:
+
+if args.config is not None:
+    config = ConfigParser()
+    config.read('config.ini')
+
     paths     = 'PATHS'
     constants = 'CONSTANT_PARAMETERS'
     variables = 'VARIABLE_PARAMETERS'
@@ -275,7 +285,7 @@ saving = SaveResults(
 saving.save_MCMC_sampler()
 
 # saving RADEX.csv output and obtaining parameter medians.
-prms_50s = saving.RADEX_for_optimal_parameters(
+prms_50s, prms_MAP = saving.RADEX_for_optimal_parameters(
     user_datfile, user_mol_frequencies, y_observed, y_uncertainties,
     freq_indices, units, lims_to_save
 )
@@ -287,6 +297,7 @@ plot = Plotting(
     MCMC_output,
     output_path,
     prms_50s,
+    prms_MAP,
     fit_parameters_names
 )
 
