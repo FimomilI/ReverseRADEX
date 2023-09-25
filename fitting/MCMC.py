@@ -25,7 +25,7 @@ def run_monte_carlo(initial_parameters,
                     number_of_walkers=35,
                     number_of_steps=500,
                     number_of_burnin_steps=100,
-                    number_of_walker_steps=200,
+                    number_of_walker_steps=500,
                     core_count=cpu_count()):
     """
     Args:
@@ -65,7 +65,19 @@ def run_monte_carlo(initial_parameters,
                    (DESnookerMove(), 0.1),]
         )
         
-        sampler.run_mcmc(pos, number_of_steps, progress=True)
+        # sampler.run_mcmc(pos, number_of_steps, progress=True)
+        
+        print(f"Burning in chain for {number_of_burnin_steps} steps")
+        sampler.run_mcmc(pos, number_of_burnin_steps, store=False,
+                         progress=True)
+        sampler.reset()
+        print(f"running {number_of_walker_steps} steps to determine parameter" +
+              " uncertianties and correlations.")
+        sampler.run_mcmc(pos, number_of_walker_steps, progress=True)
+        
+        # TODO: check for chain convergence, https://emcee.readthedocs.io/en/stable/tutorials/autocorr/#autocorr
+        # It should already be at the optimal parameters, estimated from the
+        # prior algorithms, so it should already be converged?
         
         # FIXME: separate burnin and uncertainty sampling?
         # # calculate burnin chain.
