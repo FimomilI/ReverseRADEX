@@ -113,7 +113,7 @@ To obtain optimal parameter estimates + uncertainties, ReverseRADEX employs an a
 
 <br />
 
-RADEX was originally written in Fortran but implemented in ReverseRADEX via a python wrapper package, [GitHub/uclchem/SpectralRadex](https://github.com/uclchem/SpectralRadex). In addition to wrapping the source code, it was also modernized to introducing proper multiprocessing capabilities. \
+RADEX was originally written in Fortran but implemented in ReverseRADEX via a python wrapper package, [GitHub/uclchem/SpectralRadex](https://github.com/uclchem/SpectralRadex). In addition to wrapping the source code, it was also modernized to introduce proper multiprocessing capabilities. \
 The supported (file format for the) molecular data is maintained in the Leiden Atomic and Molecular Database, [LAMDA](https://home.strw.leidenuniv.nl/~moldata/).
 
 > **Note**
@@ -296,15 +296,11 @@ where `MolecularFile` is from [LAMDA](https://home.strw.leidenuniv.nl/~moldata/)
 
 where the first column represents the line frequencies \[GHz\], the second collumn gives the corresponding intensity and a final (optional) column with the standard deviations. The first line must be the units of the provided data,
 
-<div align="center">
 
-| # | unit |
-| :--: | :-- |
-| #1 | T$_R$ \[K\] |
-| #2 | flux \[K km s$^{-1}$\] |
-| #3 | flux \[erg cm$^{-2}$ s$^{-1}$ \] |
+- #1: T$_R$ \[K\]
+- #2: flux \[K km s$^{-1}$\]
+- #3: flux \[erg cm$^{-2}$ s$^{-1}$ \].
 
-</div>
 
 You can also run it without the config, if you want to enter each argument individually by hand,
 
@@ -434,7 +430,7 @@ Also a brief description on how it is different?
 
 ## Acknowledgments
 
-This program was developed under the supervision of Prof. Dr. Floris F.S van der Tak, leading to the following BSc thesis [fse.studenttheses.ub.rug.nl/ReverseRADEX](http://fse.studenttheses.ub.rug.nl/id/eprint/25088), with relevant references listed therin.
+This program was developed under the supervision of Prof. Dr. Floris F.S. van der Tak, leading to the following BSc thesis [fse.studenttheses.ub.rug.nl/ReverseRADEX](http://fse.studenttheses.ub.rug.nl/id/eprint/25088), with relevant references listed therin.
 
 <br />
 
