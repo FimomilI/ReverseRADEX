@@ -294,6 +294,9 @@ where `MolecularFile` is from [LAMDA](https://home.strw.leidenuniv.nl/~moldata/)
 1611.793  5.3e-06  5.3e-07
 ```
 
+> **Note**
+> This data is NOT based om observations. It has been computed from RADEX models with some Gaussian noise added on top of it.
+
 where the first column represents the line frequencies \[GHz\], the second collumn gives the corresponding intensity and a final (optional) column with the standard deviations. The first line must be the units of the provided data,
 
 
@@ -327,6 +330,8 @@ python main.py
 
 ## Output
 
+> This output is based on the the example inputs `config.ini` and `SpectraFile` provided above.
+ 
 An overview of the input + parameter estimates (simply the median and 16th and 84th quartiles) are provided.
 
 ```bash
